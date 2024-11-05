@@ -1,0 +1,47 @@
+Outstanding Report = 
+ADDCOLUMNS(
+    SUMMARIZE(
+        'GLEntry',
+        'GLEntry'[voucher_no],               // Invoice Number
+        'GLEntry'[posting_date],              // Invoice Date
+        'GLEntry'[company],                   // Invoice Company
+        'GLEntry'[cost_center],               // Cost Center
+        'GLEntry'[party]                      // Customer
+    ),
+    "Initial Amount", 
+        CALCULATE(
+            SUM('GLEntry'[debit]),
+            FILTER(
+                'GLEntry', 
+                'GLEntry'[voucher_no] = EARLIER('GLEntry'[voucher_no]) &&
+                'GLEntry'[voucher_type] = "Sales Invoice"
+            )
+        ),
+    "Payments or Adjustments", 
+        CALCULATE(
+            SUM('GLEntry'[credit]) + SUM('GLEntry'[debit]),
+            FILTER(
+                'GLEntry', 
+                'GLEntry'[against_voucher] = EARLIER('GLEntry'[voucher_no]) &&
+                'GLEntry'[voucher_type] <> "Sales Invoice"
+            )
+        ),
+    "Net Outstanding", 
+        CALCULATE(
+            SUM('GLEntry'[debit]),
+            FILTER(
+                'GLEntry', 
+                'GLEntry'[voucher_no] = EARLIER('GLEntry'[voucher_no]) &&
+                'GLEntry'[voucher_type] = "Sales Invoice"
+            )
+        ) - 
+        CALCULATE(
+            SUM('GLEntry'[credit]) + SUM('GLEntry'[debit]),
+            FILTER(
+                'GLEntry', 
+                'GLEntry'[against_voucher] = EARLIER('GLEntry'[voucher_no]) &&
+                'GLEntry'[voucher_type] <> "Sales Invoice" &&
+                'GLEntry'[party_type] = "Customer" // Filter for Customer type
+            )
+        )
+)
