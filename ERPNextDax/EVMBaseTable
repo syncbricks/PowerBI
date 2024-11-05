@@ -1,0 +1,48 @@
+EVMBaseTable = 
+ADDCOLUMNS(
+    SUMMARIZE(
+        GLEntry,
+        GLEntry[project],
+        Calendar[Date],
+        "OpeningCost",
+        CALCULATE(
+            SUM(Project[total_opening_cost]),  // Total opening cost from Project table
+            FILTER(
+                Project,
+                Project[name] = EARLIER(GLEntry[project])  // Match project names
+            )
+        ),
+        "OpeningRevenue",
+        CALCULATE(
+            SUM(Project[total_opening_revenue]), // Total opening revenue from Project table
+            FILTER(
+                Project,
+                Project[name] = EARLIER(GLEntry[project])  // Match project names
+            )
+        )
+    ),
+    "AccumulatedCost",
+    // Calculate accumulated cost starting from OpeningCost
+    [OpeningCost] +  // Add the opening cost as the starting point
+    CALCULATE(
+        SUM(GLEntry[debit]) - SUM(GLEntry[credit]), // Sum costs
+        FILTER(
+            ALL(GLEntry),
+            GLEntry[posting_date] <= EARLIER(Calendar[Date]) &&
+            RELATED(account[root_type]) = "Expense" && // Filter for expenses
+            GLEntry[project] = EARLIER(GLEntry[project])
+        )
+    ),
+    "AccumulatedRevenue",
+    // Calculate accumulated revenue starting from OpeningRevenue
+    [OpeningRevenue] + // Add the opening revenue as the starting point
+    CALCULATE(
+        SUM(GLEntry[credit]) - SUM(GLEntry[debit]), // Sum revenues
+        FILTER(
+            ALL(GLEntry),
+            GLEntry[posting_date] <= EARLIER(Calendar[Date]) &&
+            RELATED(account[root_type]) = "Income" && // Filter for income
+            GLEntry[project] = EARLIER(GLEntry[project])
+        )
+    )
+)
