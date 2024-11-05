@@ -1,0 +1,56 @@
+#To Calculate Expenses or Total Cost
+
+AccumulatedCost = 
+CALCULATE(
+    SUM(GLEntry[debit]) - SUM(GLEntry[credit]),
+    FILTER(
+        ALLSELECTED(GLEntry),
+        GLEntry[posting_date] <= MAX(GLEntry[posting_date]) &&
+        RELATED(account[root_type]) = "Expense"  // Include root_type filter
+    )
+)
+
+
+#To Calculate Profit or Loss
+AccumulatedProfitOrLoss = 
+CALCULATE(
+    SUM(GLEntry[credit]),
+    FILTER(
+        ALLSELECTED(GLEntry),
+        GLEntry[posting_date] <= MAX(GLEntry[posting_date]) &&
+        RELATED(account[root_type]) = "Income"
+    )
+)
+- 
+CALCULATE(
+    SUM(GLEntry[debit]),
+    FILTER(
+        ALLSELECTED(GLEntry),
+        GLEntry[posting_date] <= MAX(GLEntry[posting_date]) &&
+        RELATED(account[root_type]) = "Expense"
+    )
+)
+
+#To Calculate Revenue
+
+AccumulatedRevenue = 
+CALCULATE(
+    SUM(GLEntry[credit]) - SUM(GLEntry[debit]),
+    FILTER(
+        ALLSELECTED(GLEntry),
+        GLEntry[posting_date] <= MAX(GLEntry[posting_date]) &&
+        RELATED(account[root_type]) = "Income"  // Include root_type filter
+    )
+)
+
+CumulativeExpenses = 
+CALCULATE(
+    SUM(GLEntry[debit]) - SUM(GLEntry[credit]),
+    FILTER(
+        ALLSELECTED(GLEntry),  // Use ALLSELECTED to respect any applied filters
+        GLEntry[posting_date] <= MAX(GLEntry[posting_date]) &&
+        RELATED(account[root_type]) = "Expense"  // Filter for Expense root_type
+    )
+)
+
+
