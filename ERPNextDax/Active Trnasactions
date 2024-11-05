@@ -1,0 +1,6 @@
+Active_Transactions = 
+IF (
+    (Project[Total Revenue] + Project[Total Actual Cost]) > 0,
+    "Yes",
+    "No"
+)
