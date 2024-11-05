@@ -1,1 +1,39 @@
+To create Table use below code 
+
 calendar = CALENDAR(DATE(1950,01,01),TODAY())
+
+Now to add additional columns use below logis;
+
+
+IsPreviousMonth = 
+IF (
+    YEAR(TODAY()) = YEAR('calendar'[Date].[Date])
+    && MONTH(TODAY()) - 1 = MONTH('calendar'[Date].[Date]),
+    "Yes",
+    "No"
+)
+
+IsCurrentMonth = 
+IF (
+    YEAR(TODAY()) = YEAR('calendar'[Date].[Date])
+    && MONTH(TODAY()) = MONTH('calendar'[Date].[Date]),
+    "Yes",
+    "No"
+)
+
+
+Then below are self explatory : 
+
+MONTH = MONTH('calendar'[Date])
+TODAY = 'calendar'[Date].[Date] = TODAY() 
+QTR = QUARTER('calendar'[Date].[Date])
+TODAY = 'calendar'[Date].[Date] = TODAY() 
+Day of Week = WEEKDAY('calendar'[Date].[Date])
+DAY of Month = DAY('calendar'[Date].[Date])
+Age in Days = DATEDIFF('calendar'[Date].[Date],TODAY(),DAY)
+Age in Months = DATEDIFF('calendar'[Date].[Date],TODAY(),MONTH)
+Age in Years = DATEDIFF('calendar'[Date].[Date],TODAY(),YEAR)
+current_year = YEAR('calendar'[Date].[Date])=year(TODAY())
+Week Number = WEEKNUM('calendar'[Date].[Date])
+Yesterday = 'calendar'[Date].[Date] = TODAY()-1
+YEAR = YEAR('calendar'[Date].[Date]) 
